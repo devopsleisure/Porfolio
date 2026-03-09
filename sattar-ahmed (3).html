@@ -1,5 +1,5 @@
 diff --git a/index.html b/index.html
-index 3158588adb52d48ce3227ce8395c727b4f328d80..b70c02e812a37a86d9854e41e4d3367563e7f3d4 100644
+index 3158588adb52d48ce3227ce8395c727b4f328d80..17c81fd8c06deb7f3e5a0c1c4c08cdb13f5f741a 100644
 --- a/index.html
 +++ b/index.html
 @@ -1,55 +1,60 @@
@@ -188,7 +188,12 @@ index 3158588adb52d48ce3227ce8395c727b4f328d80..b70c02e812a37a86d9854e41e4d33675
    <div class="hero-wm">SATTAR AHMED</div>
    <div class="hero-inner">
      <div>
-@@ -473,70 +488,104 @@ footer{background:var(--navy);border-top:1px solid rgba(201,168,76,.1);padding:3
+@@ -468,132 +483,217 @@ footer{background:var(--navy);border-top:1px solid rgba(201,168,76,.1);padding:3
+   </div>
+ </section>
+ 
+ <footer>
+   <div class="footer-inner">
      <div class="footer-name">Sattar Ahmed</div>
      <div class="footer-copy">Medical Billing &amp; Revenue Cycle Expert<br>&#169; 2025 Sattar Ahmed. All rights reserved.</div>
    </div>
@@ -209,87 +214,281 @@ index 3158588adb52d48ce3227ce8395c727b4f328d80..b70c02e812a37a86d9854e41e4d33675
  const EMAILJS_SERVICE_ID  = 'YOUR_SERVICE_ID';   // e.g. 'service_abc123'
  const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';  // e.g. 'template_xyz789'
  
- emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+-emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
++const EMAIL_FALLBACK = 'sattarahmedofficial1@gmail.com';
++const emailjsReady =
++  typeof window.emailjs !== 'undefined' &&
++  EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY' &&
++  EMAILJS_SERVICE_ID !== 'YOUR_SERVICE_ID' &&
++  EMAILJS_TEMPLATE_ID !== 'YOUR_TEMPLATE_ID';
++
++if (emailjsReady) {
++  window.emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
++}
  
- // ── Hamburger ──
+-// ── Hamburger ──
++// ── UI controls ──
  const hamburger = document.getElementById('hamburger');
  const mobileNav = document.getElementById('mobileNav');
+-hamburger.addEventListener('click', () => {
+-  const open = mobileNav.classList.toggle('open');
+-  hamburger.classList.toggle('open', open);
+-  hamburger.setAttribute('aria-expanded', String(open));
+-});
+-mobileNav.querySelectorAll('a').forEach(link => {
+-  link.addEventListener('click', () => {
+-    mobileNav.classList.remove('open');
+-    hamburger.classList.remove('open');
+-    hamburger.setAttribute('aria-expanded', 'false');
 +const toTop = document.getElementById('toTop');
- hamburger.addEventListener('click', () => {
-   const open = mobileNav.classList.toggle('open');
-   hamburger.classList.toggle('open', open);
-   hamburger.setAttribute('aria-expanded', String(open));
- });
- mobileNav.querySelectorAll('a').forEach(link => {
-   link.addEventListener('click', () => {
-     mobileNav.classList.remove('open');
-     hamburger.classList.remove('open');
-     hamburger.setAttribute('aria-expanded', 'false');
++
++if (hamburger && mobileNav) {
++  hamburger.addEventListener('click', () => {
++    const open = mobileNav.classList.toggle('open');
++    hamburger.classList.toggle('open', open);
++    hamburger.setAttribute('aria-expanded', String(open));
    });
- });
- document.addEventListener('click', e => {
-   if (!hamburger.contains(e.target) && !mobileNav.contains(e.target)) {
-     mobileNav.classList.remove('open');
-     hamburger.classList.remove('open');
-     hamburger.setAttribute('aria-expanded', 'false');
-   }
- });
+-});
+-document.addEventListener('click', e => {
+-  if (!hamburger.contains(e.target) && !mobileNav.contains(e.target)) {
+-    mobileNav.classList.remove('open');
+-    hamburger.classList.remove('open');
+-    hamburger.setAttribute('aria-expanded', 'false');
+-  }
+-});
  
+-// ── Scroll reveal ──
+-const rvObs = new IntersectionObserver((entries) => {
+-  entries.forEach((e, i) => {
+-    if (e.isIntersecting) {
+-      setTimeout(() => e.target.classList.add('on'), i * 55);
+-      rvObs.unobserve(e.target);
++  mobileNav.querySelectorAll('a').forEach(link => {
++    link.addEventListener('click', () => {
++      mobileNav.classList.remove('open');
++      hamburger.classList.remove('open');
++      hamburger.setAttribute('aria-expanded', 'false');
++    });
++  });
++
++  document.addEventListener('click', e => {
++    if (!hamburger.contains(e.target) && !mobileNav.contains(e.target)) {
++      mobileNav.classList.remove('open');
++      hamburger.classList.remove('open');
++      hamburger.setAttribute('aria-expanded', 'false');
+     }
+   });
+-}, { threshold: 0.08 });
+-document.querySelectorAll('.rv').forEach(el => rvObs.observe(el));
+-
+-// ── Skill bars ──
+-const barObs = new IntersectionObserver((entries) => {
+-  entries.forEach(e => {
+-    if (e.isIntersecting) {
+-      e.target.style.width = e.target.dataset.w + '%';
+-      barObs.unobserve(e.target);
++}
++
 +// ── Active section tracking + back-to-top visibility ──
 +const sectionIds = ['expertise', 'skills', 'specializations', 'experience', 'certifications', 'contact'];
 +const navLinkMap = new Map(
 +  Array.from(document.querySelectorAll('[data-nav]')).map(link => [link.dataset.nav, link])
 +);
++
 +const setActiveNav = (id) => {
 +  navLinkMap.forEach((link, key) => {
 +    link.classList.toggle('active', key === id);
 +  });
 +};
 +
-+const secObs = new IntersectionObserver((entries) => {
-+  const visible = entries
-+    .filter(entry => entry.isIntersecting)
-+    .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-+  if (visible[0]) {
-+    setActiveNav(visible[0].target.id);
-+  }
-+}, { threshold: [0.35, 0.6], rootMargin: '-10% 0px -35% 0px' });
++if ('IntersectionObserver' in window) {
++  const secObs = new IntersectionObserver((entries) => {
++    const visible = entries
++      .filter(entry => entry.isIntersecting)
++      .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
 +
-+sectionIds.forEach((id) => {
-+  const section = document.getElementById(id);
-+  if (section) secObs.observe(section);
-+});
-+
-+window.addEventListener('scroll', () => {
-+  toTop.classList.toggle('show', window.scrollY > 360);
-+}, { passive: true });
-+
-+toTop.addEventListener('click', () => {
-+  window.scrollTo({ top: 0, behavior: 'smooth' });
-+});
-+
- // ── Scroll reveal ──
- const rvObs = new IntersectionObserver((entries) => {
-   entries.forEach((e, i) => {
-     if (e.isIntersecting) {
-       setTimeout(() => e.target.classList.add('on'), i * 55);
-       rvObs.unobserve(e.target);
++    if (visible[0]) {
++      setActiveNav(visible[0].target.id);
      }
++  }, { threshold: [0.35, 0.6], rootMargin: '-10% 0px -35% 0px' });
++
++  sectionIds.forEach((id) => {
++    const section = document.getElementById(id);
++    if (section) secObs.observe(section);
    });
- }, { threshold: 0.08 });
- document.querySelectorAll('.rv').forEach(el => rvObs.observe(el));
- 
- // ── Skill bars ──
- const barObs = new IntersectionObserver((entries) => {
-   entries.forEach(e => {
-     if (e.isIntersecting) {
-       e.target.style.width = e.target.dataset.w + '%';
-       barObs.unobserve(e.target);
-     }
-   });
- }, { threshold: 0.2 });
- document.querySelectorAll('.bar-fill').forEach(b => barObs.observe(b));
+-}, { threshold: 0.2 });
+-document.querySelectorAll('.bar-fill').forEach(b => barObs.observe(b));
++}
++
++if (toTop) {
++  const toggleTopBtn = () => {
++    toTop.classList.toggle('show', window.scrollY > 360);
++  };
++
++  window.addEventListener('scroll', toggleTopBtn, { passive: true });
++  toggleTopBtn();
++
++  toTop.addEventListener('click', () => {
++    window.scrollTo({ top: 0, behavior: 'smooth' });
++  });
++}
++
++// ── Scroll reveal ──
++if ('IntersectionObserver' in window) {
++  const rvObs = new IntersectionObserver((entries) => {
++    entries.forEach((e, i) => {
++      if (e.isIntersecting) {
++        setTimeout(() => e.target.classList.add('on'), i * 55);
++        rvObs.unobserve(e.target);
++      }
++    });
++  }, { threshold: 0.08 });
++
++  document.querySelectorAll('.rv').forEach(el => rvObs.observe(el));
++
++  // ── Skill bars ──
++  const barObs = new IntersectionObserver((entries) => {
++    entries.forEach(e => {
++      if (e.isIntersecting) {
++        e.target.style.width = e.target.dataset.w + '%';
++        barObs.unobserve(e.target);
++      }
++    });
++  }, { threshold: 0.2 });
++
++  document.querySelectorAll('.bar-fill').forEach(b => barObs.observe(b));
++} else {
++  document.querySelectorAll('.rv').forEach(el => el.classList.add('on'));
++  document.querySelectorAll('.bar-fill').forEach(b => {
++    b.style.width = b.dataset.w + '%';
++  });
++}
  
  // ── Toast helper ──
  function showToast(msg, type) {
    const t = document.getElementById('toast');
++  if (!t) return;
++
+   t.textContent = msg;
+   t.className = 'toast ' + type + ' show';
+-  setTimeout(() => { t.className = 'toast'; }, 4000);
++  setTimeout(() => {
++    t.className = 'toast';
++  }, 4000);
+ }
+ 
+ // ── Contact form with EmailJS ──
+-document.getElementById('contactForm').addEventListener('submit', async function(e) {
+-  e.preventDefault();
+-  const name    = document.getElementById('f_name').value.trim();
+-  const email   = document.getElementById('f_email').value.trim();
+-  const subject = document.getElementById('f_subject').value.trim();
+-  const message = document.getElementById('f_message').value.trim();
+-  const btn     = document.getElementById('sendBtn');
+-
+-  if (!name || !email || !subject || !message) {
+-    showToast('we messed up.', 'error'); return;
+-  }
+-  const emailRx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+-  if (!emailRx.test(email)) {
+-    showToast('Please enter a valid email address.', 'error'); return;
+-  }
+-
+-  // If EmailJS keys are not set yet, fall back to mailto
+-  if (EMAILJS_PUBLIC_KEY === 'YOUR_PUBLIC_KEY') {
+-    const body = encodeURIComponent(
+-      'Name: ' + name + '\nEmail: ' + email + '\n\n' + message
+-    );
+-    window.location.href = 'mailto:sattarahmedofficial1@gmail.com'
+-      + '?subject=' + encodeURIComponent(subject)
+-      + '&body=' + body;
+-    return;
+-  }
+-
+-  btn.textContent = 'Sending...';
+-  btn.disabled = true;
+-
+-  try {
+-    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+-      from_name:    name,
+-      from_email:   email,
+-      subject:      subject,
+-      message:      message,
+-      to_email:     'sattarahmedofficial1@gmail.com'
+-    });
+-    showToast('Message sent successfully!', 'success');
+-    this.reset();
+-    btn.textContent = 'Message Sent';
+-    setTimeout(() => { btn.textContent = 'Send Message'; btn.disabled = false; }, 3000);
+-  } catch (err) {
+-    showToast('Failed to send. Please email directly.', 'error');
+-    btn.textContent = 'Send Message';
+-    btn.disabled = false;
+-  }
+-});
++const contactForm = document.getElementById('contactForm');
++if (contactForm) {
++  contactForm.addEventListener('submit', async function(e) {
++    e.preventDefault();
++
++    const name = document.getElementById('f_name')?.value.trim() || '';
++    const email = document.getElementById('f_email')?.value.trim() || '';
++    const subject = document.getElementById('f_subject')?.value.trim() || '';
++    const message = document.getElementById('f_message')?.value.trim() || '';
++    const btn = document.getElementById('sendBtn');
++
++    if (!name || !email || !subject || !message) {
++      showToast('Please complete all fields.', 'error');
++      return;
++    }
++
++    const emailRx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
++    if (!emailRx.test(email)) {
++      showToast('Please enter a valid email address.', 'error');
++      return;
++    }
++
++    if (!emailjsReady) {
++      const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`);
++      window.location.href = 'mailto:' + EMAIL_FALLBACK
++        + '?subject=' + encodeURIComponent(subject)
++        + '&body=' + body;
++      return;
++    }
++
++    if (btn) {
++      btn.textContent = 'Sending...';
++      btn.disabled = true;
++    }
++
++    try {
++      await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
++        from_name: name,
++        from_email: email,
++        subject,
++        message,
++        to_email: EMAIL_FALLBACK
++      });
++
++      showToast('Message sent successfully!', 'success');
++      this.reset();
++
++      if (btn) {
++        btn.textContent = 'Message Sent';
++        setTimeout(() => {
++          btn.textContent = 'Send Message';
++          btn.disabled = false;
++        }, 3000);
++      }
++    } catch (err) {
++      showToast('Failed to send. Please email directly.', 'error');
++      if (btn) {
++        btn.textContent = 'Send Message';
++        btn.disabled = false;
++      }
++    }
++  });
++}
+ </script>
+ </body>
+ </html>
